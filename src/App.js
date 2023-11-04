@@ -3,50 +3,86 @@ import axios from "axios";
 import './App.css';
 
 function App() {
-  //Get - get data from data base
-  //POST- read from data
-  //put or patch - update data
-  //delete - delete data
-  const URL = "https://6545abc8fe036a2fa954a995.mockapi.io/users`";
+  const URL = "https://6545abc8fe036a2fa954a995.mockapi.io/coolUsers";
+  const [name, setName ] = useState("");
+  const [users, setUsers ] = useState([]);
 
-  const [name, setName] = useState("");
-  const [users, setUsers] = useState([]);
-
-  const postData = () =>{
-    axios
-    //posting
-    .post(URL,{
+  //POST..basically pushing data to an array
+  const postData = ()=>{
+    axios.post(URL,{
       name:name,
       age:20,
-      hobbies:["Anime", "Cooking", "Football", "Coding", "Video Games"],
+      hobbies:["Coding", "Football", "Video games"],
     })
-    //getting data
-    .then((res) =>{
-      console.log(res);
-    })
-    .then((err) =>{
-      console.log(err);
-    })
-  }
-
-  useEffect(()=>{
-    axios.get(URL)
     .then((res)=>{
-      setUsers(res.data)
+      getData();
     })
     .catch((err)=>{
       console.log(err)
     })
-  })
+  }
+
+  //PUT - basically updating the api
+  const updatedata = (id) => {
+    axios
+      .put(`https://6545abc8fe036a2fa954a995.mockapi.io/coolUsers/${id}`, {
+        name: "King Rio",
+        age: 20,
+        hobbies: ["Coding", "Football", "Video games", "anime"],
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  //DELETE - deleting the api
+  const deleteData = (id) => {
+    axios
+      .delete(`https://6545abc8fe036a2fa954a995.mockapi.io/coolUsers/${id}`)
+      .then((res) => {
+        getData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+    //GET-basically getting data from the api
+   const getData = ()=>{
+     axios
+      .get(URL)
+      .then((res)=>{
+        setUsers(res.data)
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+   }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className="App">
-        <h1>Rest API</h1>
-        <input type="text"
-         placeholder="input data"
-         onChange={(event)=>setName(event.target.value)} />
-        <button onClick={postData}>Post data</button>
+        <input 
+        type="text" 
+        placeholder="put name"
+        onChange={(event)=>setName(event.target.value)} />
+       <button onClick={postData}>Click me</button>
 
-        {/* {homes.map(home => <div>{home.name}</div>)} */}
+       {users.map((user,index)=>{
+        return(
+          <div key={index}>
+            <h1>{`${user.id}. ${user.name}`}</h1>
+            <button onClick={()=>updatedata(user.id)}>Update</button>
+            <button onClick={()=>deleteData(user.id)}>Delete Data</button>
+          </div>
+        )
+       })}
     </div>
   );
 }
